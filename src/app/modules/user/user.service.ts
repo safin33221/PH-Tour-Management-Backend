@@ -7,14 +7,14 @@ import bcryptjs from 'bcryptjs';
 
 const createUser = async (payload: Partial<IUser>) => {
     const { email, password, ...rest } = payload
-    console.log(payload);
+
     const isUserExist = User.findOne({ email })
     if (!isUserExist) {
         throw new AppError(httpStatus.BAD_REQUEST, "User already exist")
     }
 
     const hashPassword = await bcryptjs.hash(password as string, 10)
-    console.log(hashPassword);
+
     // const isPasswordMatch = await bcryptjs.compare(password as string, hashPassword)
     const authProvider: IProviders = { provider: "credential", providerId: email as string }
 
@@ -24,7 +24,7 @@ const createUser = async (payload: Partial<IUser>) => {
         auth: [authProvider],
         ...rest
     })
-    console.log(user);
+
     return user
 }
 const getUser = async () => {
