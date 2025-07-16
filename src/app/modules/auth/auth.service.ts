@@ -2,8 +2,9 @@ import AppError from "../../../errorHelpers/AppError"
 import { IUser } from "../user/user.interface"
 import { User } from "../user/user.model"
 import httpStatus from 'http-status-codes'
-import jwt from "jsonwebtoken"
 import bcryptjs from 'bcryptjs'
+import { generateToken } from "../../../utils/jwt"
+import { envVars } from "../../../config/env"
 const credentialLogin = async (payload: Partial<IUser>) => {
     const { email, password } = payload
     const user = await User.findOne({ email })
@@ -19,9 +20,11 @@ const credentialLogin = async (payload: Partial<IUser>) => {
         email: user.email,
         role: user.role
     }
-    const accessToken = jwt.sign(jwtPayload, "secret", {
-        expiresIn: "1d"
-    })
+    // const accessToken = jwt.sign(jwtPayload, "secret", {
+    //     expiresIn: "1d"
+    // })
+    const accessToken = generateToken(jwtPayload, envVars.JWT_ACCESS_SECRET, envVars.JWT_EXPIRES_TIME)
+
 
     return {
         accessToken

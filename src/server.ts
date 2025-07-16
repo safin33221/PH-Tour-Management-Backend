@@ -3,6 +3,7 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import app from './app';
 import { envVars } from './config/env';
+import { seedSuperAdmin } from './utils/seedSuperAdmin';
 
 
 let server: Server
@@ -20,7 +21,10 @@ const startSever = async () => {
         console.log(error);
     }
 }
-startSever()
+(async () => {
+    await startSever()
+    await seedSuperAdmin()
+})()
 
 
 process.on("SIGTERM", () => {
