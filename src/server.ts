@@ -58,4 +58,3 @@ process.on("uncaughtException", (err) => {
         })
     }
 })
-throw new Error('im forgat to catch this promice ') 

@@ -5,7 +5,7 @@ dotenv.config()
 interface EnvConfig {
     PORT: string,
     DB_URL: string,
-    NODE_ENV: "development" | "production" 
+    NODE_ENV: "development" | "production"
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -13,7 +13,7 @@ const loadEnvVariables = (): EnvConfig => {
 
     requiredEnvVariables.forEach(key => {
         if (!process.env[key]) {
-            throw new Error(`Missing require environment variabl ${key}`)
+            throw new Error(`Missing require environment variable ${key}`)
         }
     })
 
