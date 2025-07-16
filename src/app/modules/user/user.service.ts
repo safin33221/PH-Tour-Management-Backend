@@ -1,11 +1,30 @@
-import { IUser } from "./user.interface";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import AppError from "../../../errorHelpers/AppError";
+import { IProviders, IUser } from "./user.interface";
 import { User } from "./user.model";
+import httpStatus from 'http-status-codes'
+import bcryptjs from 'bcryptjs';
 
 const createUser = async (payload: Partial<IUser>) => {
-    const { name, email } = payload
+    const { email, password, ...rest } = payload
+    console.log(payload);
+    const isUserExist = User.findOne({ email })
+    if (!isUserExist) {
+        throw new AppError(httpStatus.BAD_REQUEST, "User already exist")
+    }
+
+    const hashPassword = await bcryptjs.hash(password as string, 10)
+    console.log(hashPassword);
+    // const isPasswordMatch = await bcryptjs.compare(password as string, hashPassword)
+    const authProvider: IProviders = { provider: "credential", providerId: email as string }
+
     const user = await User.create({
-        name, email
+        email,
+        password: hashPassword,
+        auth: [authProvider],
+        ...rest
     })
+    console.log(user);
     return user
 }
 const getUser = async () => {
