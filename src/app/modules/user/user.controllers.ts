@@ -29,39 +29,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 })
 
 
-const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
 
-
-    const userExist = await User.findById(userId)
-    if (!userExist) {
-        throw new AppError(httpStatus.NOT_FOUND, "User not found")
-    }
-
-
-
-    if (payload.role) {
-        if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
-            throw new AppError(httpStatus.FORBIDDEN, "your are not authorized")
-        }
-        if (decodedToken.role === Role.SUPER_ADMIN || decodedToken.role === Role.ADMIN) {
-            throw new AppError(httpStatus.FORBIDDEN, "your are not authorized")
-
-        }
-    }
-
-    if (payload.isActive || payload.isDeleted || payload.isVerified) {
-        if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
-            throw new AppError(httpStatus.FORBIDDEN, "your are not authorized")
-        }
-    }
-
-    if (payload.password) {
-        payload.password = await bcryptjs.hash(payload.password, envVars.BCRYPT_SAULT_ROUND)
-    }
-
-    const newUpdateUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
-    return newUpdateUser
-}
 
 const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -81,5 +49,5 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
 export const UserControllers = {
     createUser,
     getAllUsers,
-    updateUser
+   
 }
