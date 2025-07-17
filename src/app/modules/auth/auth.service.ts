@@ -6,7 +6,7 @@ import httpStatus from 'http-status-codes'
 import bcryptjs from 'bcryptjs'
 import { generateToken, verifyToken } from "../../../utils/jwt"
 import { envVars } from "../../../config/env"
-import { createToken } from "../../../utils/userTokens"
+import { crateNewAccessTokenWithRefreshToken, createToken } from "../../../utils/userTokens"
 import { JwtPayload } from "jsonwebtoken"
 
 
@@ -33,26 +33,10 @@ const credentialLogin = async (payload: Partial<IUser>) => {
 }
 
 const getNewAccessToken = async (refreshToken: string) => {
-    const verifiedRefreshToken = verifyToken(refreshToken, envVars.JWT_REFRESH_SECRET) as JwtPayload
-    const isUserExist = await User.findOne({ email: verifiedRefreshToken.email })
 
-    if (!isUserExist) {
-        throw new AppError(httpStatus.BAD_REQUEST, "email does not exist")
-    }
-    if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
-        throw new AppError(httpStatus.BAD_REQUEST, `Use is ${isUserExist.isActive}`)
-    }
+    const newAccessToken = await crateNewAccessTokenWithRefreshToken(refreshToken)
 
-    if (isUserExist.isDeleted) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User is deleted")
-    }
-    const jwtPayload = {
-        userId: isUserExist._id,
-        email: isUserExist.email,
-        role: isUserExist.role,
-    }
-    const accessToken = generateToken(jwtPayload, envVars.JWT_ACCESS_SECRET, envVars.JWT_EXPIRES_TIME)
-    return { accessToken }
+    return { accessToken: newAccessToken }
 }
 export const authServices = {
     credentialLogin,
