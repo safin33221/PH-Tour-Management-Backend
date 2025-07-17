@@ -1,4 +1,4 @@
-import { IProviders, IUser } from "../app/modules/user/user.interface"
+import { IProviders, IUser, Role } from "../app/modules/user/user.interface"
 import { User } from "../app/modules/user/user.model"
 import { envVars } from "../config/env"
 import bcryptjs from "bcryptjs"
@@ -21,7 +21,8 @@ export const seedSuperAdmin = async () => {
             email: envVars.SUPER_ADMIN_EMAIL,
             password: hashPassword,
             auth: [authProvider],
-            isVerified: true
+            isVerified: true,
+            role: Role.SUPER_ADMIN
 
         }
         const superAdmin = await User.create(payload)

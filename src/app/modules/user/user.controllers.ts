@@ -11,18 +11,35 @@ import AppError from "../../../errorHelpers/AppError";
 import bcryptjs from 'bcryptjs'
 import { envVars } from "../../../config/env";
 import { User } from "./user.model";
+import { verifyToken } from "../../../utils/jwt";
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const users = await userServices.createUser(req.body)
-    // res.status(httpStatus.CREATED).json({
-    //     message: 'user created successfully',
-    //     user
-    // })
+   
 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
         message: 'user created successfully',
+        data: users,
+
+    })
+})
+
+
+const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id
+    // const token = req.headers.authorization
+    // const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_SECRET) as JwtPayload
+    const payload = req.body
+    const verifiedToken = req.user
+    const users = await userServices.updateUser(userId, payload, verifiedToken)
+
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'user Updated successfully',
         data: users,
 
     })
@@ -49,5 +66,6 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
 export const UserControllers = {
     createUser,
     getAllUsers,
-   
+    updateUser
+
 }

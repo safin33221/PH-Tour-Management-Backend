@@ -13,6 +13,7 @@ export const checkAuth = (...authRole: string[]) => async (req: Request, res: Re
             throw new AppError(403, "No Token Received")
         }
         const verifiedToken = verifyToken(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload
+        req.user = verifiedToken
 
         if (!authRole.includes(verifiedToken.role)) {
             throw new AppError(403, "You'r not permitted to view this route")
