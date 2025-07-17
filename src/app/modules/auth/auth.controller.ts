@@ -7,7 +7,20 @@ import { User } from "../user/user.model"
 import { authServices } from "./auth.service"
 
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await authServices.credentialLogin(req.body)
+    const tokenInfo = await authServices.credentialLogin(req.body)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'user Login successfully',
+        data: tokenInfo,
+
+    })
+})
+
+const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const refreshToken = req.headers.authorization
+    const loginInfo = await authServices.getNewAccessToken(refreshToken as string)
 
     sendResponse(res, {
         success: true,
@@ -19,5 +32,6 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
 })
 
 export const authControllers = {
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken
 }
