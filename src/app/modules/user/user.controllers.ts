@@ -15,7 +15,7 @@ import { verifyToken } from "../../../utils/jwt";
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const users = await userServices.createUser(req.body)
-   
+
 
     sendResponse(res, {
         success: true,
@@ -54,7 +54,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: 'All users retrive  successfully',
+        message: 'All users receive  successfully',
         data: result.data,
         meta: result.meta
 
@@ -63,9 +63,11 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
 })
 
 
+
 export const UserControllers = {
     createUser,
     getAllUsers,
-    updateUser
+    updateUser,
+
 
 }

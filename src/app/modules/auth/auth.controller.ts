@@ -5,9 +5,21 @@ import httpStatus from 'http-status-codes'
 import { sendResponse } from "../../../utils/sendResponse"
 import { User } from "../user/user.model"
 import { authServices } from "./auth.service"
+import AppError from "../../../errorHelpers/AppError"
+import { setAuthCookie } from "../../../utils/setCookie"
+import { JwtPayload } from "jsonwebtoken"
+import { generateToken } from "../../../utils/jwt"
+import { createToken } from "../../../utils/userTokens"
+import { envVars } from "../../../config/env"
 
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const loginInfo = await authServices.credentialLogin(req.body)
+    // res.cookie("refreshToken", loginInfo.refreshToken, {
+    //     httpOnly: true,
+    //     secure: false
+    // })
+    setAuthCookie(res, loginInfo)
+
 
     sendResponse(res, {
         success: true,
@@ -18,6 +30,86 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
     })
 })
 
+const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const refreshToken = req.cookies.refreshToken
+    if (!refreshToken) {
+        throw new AppError(httpStatus.BAD_REQUEST, "No Refresh token received from cookies")
+    }
+    const tokenInfo = await authServices.getNewAccessToken(refreshToken as string)
+    setAuthCookie(res, tokenInfo)
+
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'New access token reterive successfully',
+        data: tokenInfo,
+
+    })
+})
+const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    })
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    })
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'user logout successfully',
+        data: null,
+
+    })
+})
+
+
+const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user as JwtPayload
+    const newPassword = req.body.newPassword
+    const oldPassword = req.body.oldPassword
+    await authServices.resetPassword(oldPassword, newPassword, decodedToken)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'user Changed successfully',
+        data: null,
+
+    })
+})
+
+
+const googleCallback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    let redirectTo = req.query.state ? req.query.state as string : ""
+    console.log("redirect to", redirectTo);
+    if (redirectTo.startsWith("/")) {
+        redirectTo = redirectTo.slice(1)
+
+    }
+    const user = req.user
+    // console.log("User>>>>>>>>>", user);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found ")
+    }
+    const tokenInfo = await createToken(user)
+    setAuthCookie(res, tokenInfo)
+
+    res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`)
+})
+
+
+
 export const authControllers = {
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken,
+    logout, resetPassword, googleCallback
 }
