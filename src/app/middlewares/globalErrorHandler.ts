@@ -17,6 +17,10 @@ export const globalErrorhandler = (err: any, req: Request, res: Response, next: 
         message = `${matchArray[1]} already exist`
 
     }
+    else if(err.name ==="CastError"){
+        statusCode =400;
+        message="Invalid Object Id . Please provide a valid Id"
+    }
     else if (err instanceof AppError) {
         statusCode = err.statusCode
         message = err.message
