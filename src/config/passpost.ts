@@ -9,7 +9,7 @@ import bcryptjs from 'bcryptjs'
 
 passport.use(
     new LocalStrategy({
-        usernameField: "email",
+        usernameField: "email", 
         passwordField: "password"
     }, async (email: string, password: string, done: any) => {
         try {

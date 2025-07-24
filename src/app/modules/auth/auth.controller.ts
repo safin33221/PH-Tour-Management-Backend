@@ -82,8 +82,6 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
 
     })
 })
-
-
 const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const decodedToken = req.user as JwtPayload
