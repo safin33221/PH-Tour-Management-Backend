@@ -16,7 +16,23 @@ const createDivision = catchAsync(async (req: Request, res: Response, next: Next
     })
 })
 
+const getAllDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await divisionService.getAllDivision()
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Get all division data",
+        data: result.data,
+        meta: result.meta
+
+    })
+})
+
+
+
 
 export const divisionController = {
-    createDivision
+    createDivision,
+    getAllDivision
 }
