@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import AppError from "../../../errorHelpers/AppError";
 import { IProviders, IUser, Role } from "./user.interface";
