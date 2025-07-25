@@ -25,7 +25,9 @@ const getAllTour = async () => {
     const totalTours = await Tour.countDocuments()
     return {
         tours,
-        totalTours
+        meta: {
+            total: totalTours
+        }
     }
 }
 
