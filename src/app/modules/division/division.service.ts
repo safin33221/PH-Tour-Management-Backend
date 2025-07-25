@@ -54,4 +54,5 @@ export const divisionService = {
     getAllDivision,
     updateDivision,
     deleteDivision
+    
 }

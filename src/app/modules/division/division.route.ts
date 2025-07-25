@@ -12,6 +12,19 @@ router.get('/', divisionController.getAllDivision)
 router.post('/create',
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createDivisionSchema),
-    divisionController.createDivision)
+    divisionController.createDivision
+)
+
+router.patch(
+    "/:id",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    divisionController.updateDivision
+)
+
+router.delete(
+    "/:id",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    divisionController.deleteDivision
+)
 
 export const divisionRoute = router
