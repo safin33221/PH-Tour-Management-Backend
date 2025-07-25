@@ -38,6 +38,17 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
         throw new Error("Tour not found")
 
     }
+
+    if (payload.title) {
+        const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
+        let slug = `${baseSlug}-division`
+        let counter = 0
+        while (await Tour.exists({ slug })) {
+            slug = `${slug}-${counter++}`
+        }
+
+        payload.slug = slug
+    }
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
     return updatedTour
 

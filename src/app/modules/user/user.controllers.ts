@@ -32,7 +32,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     // const token = req.headers.authorization
     // const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_SECRET) as JwtPayload
     const payload = req.body
-    const verifiedToken = req.user
+    const verifiedToken = req.user as JwtPayload
     const users = await userServices.updateUser(userId, payload, verifiedToken)
 
 
