@@ -29,10 +29,40 @@ const getAllDivision = catchAsync(async (req: Request, res: Response, next: Next
     })
 })
 
+const updateDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id
+    const updatedDivision = await divisionService.updateDivision(id, req.body)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "update division data Successfully",
+        data: updatedDivision
+
+
+
+    })
+})
+
+const deleteDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id
+    const result = await divisionService.deleteDivision(id)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Delete division  Successfully",
+        data: null
+
+
+
+    })
+})
+
 
 
 
 export const divisionController = {
     createDivision,
-    getAllDivision
+    getAllDivision,
+    updateDivision,
+    deleteDivision
 }
