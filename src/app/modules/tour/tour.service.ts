@@ -1,63 +1,82 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { excludedField } from "../../constant";
+
 import { tourSearchAbleFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
+import { any, promise } from "zod";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { excludedField } from "../../constant";
+
+
+
+
 
 const createTour = async (payload: ITour) => {
     const existingTour = await Tour.findOne({ title: payload.title })
     if (existingTour) {
         throw new Error("A Tour with This title already exist")
     }
-
-    // const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
-    // let slug = `${baseSlug}-division`
-    // let counter = 0
-    // while (await Tour.exists({ slug })) {
-    //     slug = `${slug}-${counter++}`
-    // }
-
-    // payload.slug = slug
     const tour = await Tour.create(payload)
     return tour
 }
 
 
 const getAllTour = async (query: Record<string, string>) => {
-    const filter = query
-    const searchTerm = query.searchTerm || "";
-    const sort = query.sort || "-createdAt";
-    const field = query.field.split(',').join(' ') || "";
-    console.log();
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
+    const queryBuilder = new QueryBuilder(Tour.find(), query)
 
-    const skip = (page - 1) * limit
 
-    for (const field of excludedField) {
-        delete filter[field]
-    }
-    const searchQuery = {
-        $or: tourSearchAbleFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-    }
+    const tours = await queryBuilder
+        .search(tourSearchAbleFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
 
-    const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(field).skip(skip).limit(limit)
-    const totalTours = await Tour.countDocuments()
-    const totalPage = Math.ceil(totalTours / limit)
-    const meta = {
-        page: page,
-        limit: limit,
-        total: totalTours,
-        totalPage: totalPage,
-    }
+
+
+    // const meta = await queryBuilder.getMeta()
+    const [data, meta] = await Promise.all([
+        tours.build(),
+        queryBuilder.getMeta()
+    ])
     return {
-        tours,
-        meta: {
-            total: meta
-        }
+        data,
+        meta
     }
 }
+
+// const getAllTourOld = async (query: Record<string, string>) => {
+//     const filter = query
+//     const searchTerm = query.searchTerm || "";
+//     const sort = query.sort || "-createdAt";
+//     const field = query.field.split(',').join(' ') || "";
+//     const page = Number(query.page) || 1;
+//     const limit = Number(query.limit) || 10;
+//     const skip = (page - 1) * limit
+//     for (const field of excludedField) {
+//         delete filter[field]
+//     }
+//     const searchQuery = {
+//         $or: tourSearchAbleFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
+//     }
+//     const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(field).skip(skip).limit(limit)
+//     const totalTours = await Tour.countDocuments()
+//     const totalPage = Math.ceil(totalTours / limit)
+//     const meta = {
+//         page: page,
+//         limit: limit,
+//         total: totalTours,
+//         totalPage: totalPage,
+//     }
+//     return {
+//         tours,
+//         meta: {
+//             total: meta
+//         }
+//     }
+// }
 
 const getSingleTour = async (slug: string) => {
     const tour = await Tour.findOne({ slug });
@@ -70,22 +89,9 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     const isExistingTour = await Tour.findById(id)
     if (!isExistingTour) {
         throw new Error("Tour not found")
-
     }
-
-    // if (payload.title) {
-    //     const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
-    //     let slug = `${baseSlug}-division`
-    //     let counter = 0
-    //     while (await Tour.exists({ slug })) {
-    //         slug = `${slug}-${counter++}`
-    //     }
-
-    //     payload.slug = slug
-    // }
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
     return updatedTour
-
 }
 
 const deleteTour = async (id: string) => {
@@ -98,11 +104,9 @@ const deleteTour = async (id: string) => {
 const createTourType = async (name: ITourType) => {
 
     const existingTourType = await TourType.findOne({ name });
-
     if (existingTourType) {
         throw new Error("Tour type already exists.");
     }
-
     return await TourType.create({ name });
 };
 

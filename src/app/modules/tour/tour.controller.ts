@@ -27,7 +27,7 @@ const getAllTour = catchAsync(async (req: Request, res: Response, next: NextFunc
         success: true,
         statusCode: httpStatus.OK,
         message: "tour gets successfully",
-        data: result.tours,
+        data: result.data,
         meta: result.meta
 
 
