@@ -8,14 +8,14 @@ const createTour = async (payload: ITour) => {
         throw new Error("A Tour with This title already exist")
     }
 
-    const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
-    let slug = `${baseSlug}-division`
-    let counter = 0
-    while (await Tour.exists({ slug })) {
-        slug = `${slug}-${counter++}`
-    }
+    // const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
+    // let slug = `${baseSlug}-division`
+    // let counter = 0
+    // while (await Tour.exists({ slug })) {
+    //     slug = `${slug}-${counter++}`
+    // }
 
-    payload.slug = slug
+    // payload.slug = slug
     const tour = await Tour.create(payload)
     return tour
 }
@@ -46,16 +46,16 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
 
     }
 
-    if (payload.title) {
-        const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
-        let slug = `${baseSlug}-division`
-        let counter = 0
-        while (await Tour.exists({ slug })) {
-            slug = `${slug}-${counter++}`
-        }
+    // if (payload.title) {
+    //     const baseSlug = payload.title?.toLowerCase().split(" ").join("-")
+    //     let slug = `${baseSlug}-division`
+    //     let counter = 0
+    //     while (await Tour.exists({ slug })) {
+    //         slug = `${slug}-${counter++}`
+    //     }
 
-        payload.slug = slug
-    }
+    //     payload.slug = slug
+    // }
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
     return updatedTour
 
@@ -68,8 +68,9 @@ const deleteTour = async (id: string) => {
 
 
 
-const createTourType = async (payload: ITourType) => {
-    const existingTourType = await TourType.findOne({ name: payload.name });
+const createTourType = async (name: ITourType) => {
+  
+    const existingTourType = await TourType.findOne({ name });
 
     if (existingTourType) {
         throw new Error("Tour type already exists.");
