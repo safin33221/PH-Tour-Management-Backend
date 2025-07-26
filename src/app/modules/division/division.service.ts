@@ -1,4 +1,4 @@
-import AppError from "../../../errorHelpers/AppError";
+import AppError from "../../errorHelpers/AppError";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 

@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import AppError from "../../../errorHelpers/AppError";
+
 import { IProviders, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from 'http-status-codes'
 import bcryptjs from 'bcryptjs';
-import { envVars } from "../../../config/env";
+
 import { JwtPayload } from "jsonwebtoken";
+import { envVars } from "../../config/env";
+import AppError from "../../errorHelpers/AppError";
 
 const createUser = async (payload: Partial<IUser>) => {
     const { email, password, ...rest } = payload

@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express"
-import { catchAsync } from "../../../utils/CatchAsync"
+
 import httpStatus from 'http-status-codes'
-import { sendResponse } from "../../../utils/sendResponse"
+
 import { User } from "../user/user.model"
 import { authServices } from "./auth.service"
-import AppError from "../../../errorHelpers/AppError"
-import { setAuthCookie } from "../../../utils/setCookie"
+
 import { JwtPayload } from "jsonwebtoken"
-import { generateToken } from "../../../utils/jwt"
-import { createToken } from "../../../utils/userTokens"
-import { envVars } from "../../../config/env"
+
 import passport from "passport"
+import { catchAsync } from "../../utils/CatchAsync"
+import AppError from "../../errorHelpers/AppError"
+import { createToken } from "../../utils/userTokens"
+import { setAuthCookie } from "../../utils/setCookie"
+import { sendResponse } from "../../utils/sendResponse"
+import { envVars } from "../../config/env"
 
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     // const loginInfo = await authServices.credentialLogin(req.body)

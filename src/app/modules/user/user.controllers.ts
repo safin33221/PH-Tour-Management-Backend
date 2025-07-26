@@ -3,15 +3,11 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from 'http-status-codes';
 import { userServices } from "./user.service";
-import { catchAsync } from "../../../utils/CatchAsync";
-import { sendResponse } from "../../../utils/sendResponse";
+
 import { JwtPayload } from "jsonwebtoken";
-import { IUser, Role } from "./user.interface";
-import AppError from "../../../errorHelpers/AppError";
-import bcryptjs from 'bcryptjs'
-import { envVars } from "../../../config/env";
-import { User } from "./user.model";
-import { verifyToken } from "../../../utils/jwt";
+import { catchAsync } from "../../utils/CatchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const users = await userServices.createUser(req.body)

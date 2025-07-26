@@ -2,10 +2,11 @@
 import passport from "passport";
 import { envVars } from "./env";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from 'passport-google-oauth20'
-import { User } from "../app/modules/user/user.model";
-import { Role } from "../app/modules/user/user.interface";
+
 import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from 'bcryptjs'
+import { User } from "../modules/user/user.model";
+import { Role } from "../modules/user/user.interface";
 
 passport.use(
     new LocalStrategy({

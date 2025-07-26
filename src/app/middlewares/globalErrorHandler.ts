@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express"
-import { envVars } from "../../config/env"
-import AppError from "../../errorHelpers/AppError"
+
 import mongoose, { TreatAsPrimitives } from "mongoose"
-import { handleDuplicateError } from "../../helpers/handleDuplicateError"
-import { handleCastError } from "../../helpers/handleCastError"
-import { handleZodError } from "../../helpers/handleZodError"
-import { handleValidationError } from "../../helpers/handleValidationError"
-import { IErrorSource } from "../../interfaces/error.type"
+import { envVars } from "../config/env";
+import { handleDuplicateError } from "../helpers/handleDuplicateError";
+import { handleCastError } from "../helpers/handleCastError";
+import { handleZodError } from "../helpers/handleZodError";
+import { IErrorSource } from "../interfaces/error.type";
+import { handleValidationError } from "../helpers/handleValidationError";
+import AppError from "../errorHelpers/AppError";
+
 
 export const globalErrorhandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (envVars.NODE_ENV === 'development') {

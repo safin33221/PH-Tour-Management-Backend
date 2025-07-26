@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
-import { catchAsync } from "../../../utils/CatchAsync";
+
 import { tourService } from "./tour.service";
-import { sendResponse } from "../../../utils/sendResponse";
+
 import httpStatus from 'http-status-codes'
+import { catchAsync } from "../../utils/CatchAsync";
+import { sendResponse } from "../../utils/sendResponse";
 
 const createTour = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const tour = await tourService.createTour(req.body)
@@ -18,7 +20,9 @@ const createTour = catchAsync(async (req: Request, res: Response, next: NextFunc
 })
 
 const getAllTour = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await tourService.getAllTour()
+
+    const query = req.query
+    const result = await tourService.getAllTour(query as Record<string, string>)
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,

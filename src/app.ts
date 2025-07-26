@@ -2,7 +2,7 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { router } from './app/routes'
-import "./config/passpost"
+import "./app/config/passpost"
 import { globalErrorhandler } from './app/middlewares/globalErrorHandler'
 import notFound from './app/middlewares/notFound'
 import cookieParser from 'cookie-parser'

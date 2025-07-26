@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { tourSearchAbleFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
 
@@ -21,8 +23,21 @@ const createTour = async (payload: ITour) => {
 }
 
 
-const getAllTour = async () => {
-    const tours = await Tour.find({})
+const getAllTour = async (query: Record<string, string>) => {
+    const filter = query
+    const searchTerm = query.searchTerm || ""
+    const sort = query.sort || "-createdAt"
+    delete filter["searchTerm"]
+    delete filter["sort"]
+    const excludedField = ['searchTerm', 'sort']
+    for (const field of excludedField) {
+        delete filter[field]
+    }
+    const searchQuery = {
+        $or: tourSearchAbleFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
+    }
+
+    const tours = await Tour.find(searchQuery).find(filter).sort(sort)
     const totalTours = await Tour.countDocuments()
     return {
         tours,
@@ -69,7 +84,7 @@ const deleteTour = async (id: string) => {
 
 
 const createTourType = async (name: ITourType) => {
-  
+
     const existingTourType = await TourType.findOne({ name });
 
     if (existingTourType) {
