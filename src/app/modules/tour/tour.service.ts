@@ -47,36 +47,7 @@ const getAllTour = async (query: Record<string, string>) => {
     }
 }
 
-// const getAllTourOld = async (query: Record<string, string>) => {
-//     const filter = query
-//     const searchTerm = query.searchTerm || "";
-//     const sort = query.sort || "-createdAt";
-//     const field = query.field.split(',').join(' ') || "";
-//     const page = Number(query.page) || 1;
-//     const limit = Number(query.limit) || 10;
-//     const skip = (page - 1) * limit
-//     for (const field of excludedField) {
-//         delete filter[field]
-//     }
-//     const searchQuery = {
-//         $or: tourSearchAbleFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-//     }
-//     const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(field).skip(skip).limit(limit)
-//     const totalTours = await Tour.countDocuments()
-//     const totalPage = Math.ceil(totalTours / limit)
-//     const meta = {
-//         page: page,
-//         limit: limit,
-//         total: totalTours,
-//         totalPage: totalPage,
-//     }
-//     return {
-//         tours,
-//         meta: {
-//             total: meta
-//         }
-//     }
-// }
+
 
 const getSingleTour = async (slug: string) => {
     const tour = await Tour.findOne({ slug });

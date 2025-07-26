@@ -19,6 +19,8 @@ router.post('/create',
     tourController.createTour
 )
 
+router.get("/:slug", tourController.getSingleTour)
+
 router.patch('/:id',
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(updateTourZodSchema),

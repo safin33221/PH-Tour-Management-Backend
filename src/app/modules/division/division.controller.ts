@@ -39,7 +39,7 @@ const getSingleDivision = catchAsync(async (req: Request, res: Response, next: N
         statusCode: httpStatus.OK,
         message: "Get all division data",
         data: result.data,
-        meta: result.meta
+     
 
     })
 })

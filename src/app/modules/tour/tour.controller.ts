@@ -41,7 +41,7 @@ const getSingleTour = catchAsync(async (req: Request, res: Response) => {
         statusCode: 200,
         success: true,
         message: 'Tour retrieved successfully',
-        data: result,
+        data: result.data,
     });
 });
 
@@ -136,6 +136,7 @@ const deleteTourType = catchAsync(async (req: Request, res: Response) => {
 export const tourController = {
     createTour,
     getAllTour,
+    getSingleTour,
     updateTour,
     deleteTour,
     getSingleTourType,
