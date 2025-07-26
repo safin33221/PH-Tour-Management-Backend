@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { excludedField } from "../../constant";
 import { tourSearchAbleFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
@@ -25,11 +26,15 @@ const createTour = async (payload: ITour) => {
 
 const getAllTour = async (query: Record<string, string>) => {
     const filter = query
-    const searchTerm = query.searchTerm || ""
-    const sort = query.sort || "-createdAt"
-    delete filter["searchTerm"]
-    delete filter["sort"]
-    const excludedField = ['searchTerm', 'sort']
+    const searchTerm = query.searchTerm || "";
+    const sort = query.sort || "-createdAt";
+    const field = query.field.split(',').join(' ') || "";
+    console.log();
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    const skip = (page - 1) * limit
+
     for (const field of excludedField) {
         delete filter[field]
     }
@@ -37,12 +42,19 @@ const getAllTour = async (query: Record<string, string>) => {
         $or: tourSearchAbleFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
     }
 
-    const tours = await Tour.find(searchQuery).find(filter).sort(sort)
+    const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(field).skip(skip).limit(limit)
     const totalTours = await Tour.countDocuments()
+    const totalPage = Math.ceil(totalTours / limit)
+    const meta = {
+        page: page,
+        limit: limit,
+        total: totalTours,
+        totalPage: totalPage,
+    }
     return {
         tours,
         meta: {
-            total: totalTours
+            total: meta
         }
     }
 }
