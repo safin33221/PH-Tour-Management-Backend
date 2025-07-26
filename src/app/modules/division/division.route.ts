@@ -14,6 +14,9 @@ router.post('/create',
     validateRequest(createDivisionSchema),
     divisionController.createDivision
 )
+router.get("/:slug",
+    divisionController.getSingleDivision
+)
 
 router.patch(
     "/:id",
