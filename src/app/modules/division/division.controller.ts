@@ -19,7 +19,8 @@ const createDivision = catchAsync(async (req: Request, res: Response, next: Next
 })
 
 const getAllDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await divisionService.getAllDivision()
+    const query = req.query
+    const result = await divisionService.getAllDivision(query as Record<string, string>)
 
     sendResponse(res, {
         success: true,
@@ -39,7 +40,7 @@ const getSingleDivision = catchAsync(async (req: Request, res: Response, next: N
         statusCode: httpStatus.OK,
         message: "Get all division data",
         data: result.data,
-     
+
 
     })
 })
