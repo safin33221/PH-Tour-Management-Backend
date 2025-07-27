@@ -4,7 +4,6 @@ import { NextFunction, Request, Response } from "express"
 
 import httpStatus from 'http-status-codes'
 
-import { User } from "../user/user.model"
 import { authServices } from "./auth.service"
 
 import { JwtPayload } from "jsonwebtoken"

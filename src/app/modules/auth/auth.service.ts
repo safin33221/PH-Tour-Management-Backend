@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { IsActive, IUser } from "../user/user.interface"
+import { IUser } from "../user/user.interface"
 import { User } from "../user/user.model"
 import httpStatus from 'http-status-codes'
 import bcryptjs from 'bcryptjs'

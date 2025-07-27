@@ -35,8 +35,6 @@ const initPayment = async (bookingId: string) => {
         amount: payment.amount,
         transactionId: payment.transactionId
     }
-
-    console.log(sslPayload);
     const sslPayment = await SLLService.SSLCommerzInit(sslPayload)
 
     return {
@@ -102,7 +100,7 @@ const failPayment = async (query: Record<string, string>) => {
 
 
         await session.commitTransaction()
-        console.log(updatedPayment);
+
         session.endSession()
         return {
             success: false,
