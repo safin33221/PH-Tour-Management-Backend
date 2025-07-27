@@ -9,6 +9,8 @@ import { Tour } from "../tour/tour.model";
 import { User } from "../user/user.model";
 import { BOOKING_STATUS, IBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
+import { SLLService } from "../sslCommerz/sslCommerz.service";
+import { ISLLCommerz } from "../sslCommerz/SLLCommerz.interface";
 
 const getTransactionId = () => {
     return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`
@@ -54,10 +56,28 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
             .populate("user", "name email phone address")
             .populate("tour", "title costFrom")
             .populate("payment")
+        const userAddress = (updatedBooking?.user as any).address
+        const userEmail = (updatedBooking?.user as any).email
+        const userPhoneNumber = (updatedBooking?.user as any).phone
+        const userName = (updatedBooking?.user as any).name
 
+        const sslPayload: ISLLCommerz = {
+            name: userName,
+            email: userEmail,
+            address: userAddress,
+            phoneNumber: userPhoneNumber,
+            amount: amount,
+            transactionID: transactionId
+        }
+        console.log(sslPayload);
+        const sslPayment = await SLLService.SSLCommerzInit(sslPayload)
+        console.log(sslPayment);
         await session.commitTransaction()
         session.endSession()
-        return updatedBooking
+        return {
+            paymentURL: sslPayment.GatewayPageURL,
+            booking: updatedBooking
+        }
     } catch (error: any) {
         await session.abortTransaction()
         session.endSession()
