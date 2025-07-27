@@ -4,6 +4,7 @@ import { authRoute } from "../modules/auth/auth.route";
 import { divisionRoute } from "../modules/division/division.route";
 import { tourRoute } from "../modules/tour/tour.route";
 import { BookingRoutes } from "../modules/booking/booking.route";
+import { PaymentRoutes } from "../modules/payment/payment.route";
 
 export const router = Router()
 const modulesRoutes = [
@@ -25,6 +26,10 @@ const modulesRoutes = [
     , {
         path: "/booking",
         route: BookingRoutes
+    }
+    , {
+        path: "/payment",
+        route: PaymentRoutes
     }
 ]
 
