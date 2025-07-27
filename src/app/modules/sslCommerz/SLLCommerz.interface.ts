@@ -1,6 +1,6 @@
 export interface ISLLCommerz {
     amount: number
-    transactionID: string
+    transactionId: string
     name: string
     email: string,
     phoneNumber: string,

@@ -67,11 +67,11 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
             address: userAddress,
             phoneNumber: userPhoneNumber,
             amount: amount,
-            transactionID: transactionId
+            transactionId: transactionId
         }
         console.log(sslPayload);
         const sslPayment = await SLLService.SSLCommerzInit(sslPayload)
-        console.log(sslPayment);
+      
         await session.commitTransaction()
         session.endSession()
         return {
