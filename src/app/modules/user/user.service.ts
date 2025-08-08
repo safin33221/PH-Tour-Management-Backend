@@ -78,8 +78,21 @@ const getUser = async () => {
         }
     }
 }
+
+const getMe = async (userId: string) => {
+    const users = await User.findById(userId).select("-password")
+    const totalUser = await User.countDocuments()
+
+    return {
+        data: users,
+        meta: {
+            total: totalUser
+        }
+    }
+}
 export const userServices = {
     createUser,
     getUser,
-    updateUser
+    updateUser,
+    getMe
 }

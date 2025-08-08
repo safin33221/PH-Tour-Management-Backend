@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import passport from "passport";
 import { envVars } from "./env";
-import { Strategy as GoogleStrategy, Profile, VerifyCallback } from 'passport-google-oauth20'
-
+import { Strategy as GoogleStrategy, Profile, VerifyCallback } from 'passport-google-oauth20';
 import { Strategy as LocalStrategy } from "passport-local";
-import bcryptjs from 'bcryptjs'
+import bcryptjs from 'bcryptjs';
 import { User } from "../modules/user/user.model";
-import { Role } from "../modules/user/user.interface";
+import { IsActive, Role } from "../modules/user/user.interface";
 import AppError from "../errorHelpers/AppError";
 
 passport.use(
@@ -18,6 +17,20 @@ passport.use(
             const user = await User.findOne({ email })
             if (!user) {
                 return done(null, false, { message: "User does not exist" })
+            }
+            if (!user.isVerified) {
+                // throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
+                return done(null, false, { message: "User is not verified" })
+
+            }
+            if (user.isActive === IsActive.BLOCKED || user.isActive === IsActive.INACTIVE) {
+                // throw new AppError(httpStatus.BAD_REQUEST, `Use is ${user.isActive}`)
+                return done(null, false, { message: `User is ${user.isActive}` })
+            }
+
+            if (user.isDeleted) {
+                // throw new AppError(httpStatus.BAD_REQUEST, "User is deleted")
+                return done(null, false, { message: "User is deleted" })
             }
 
             const isGoogleAuthenticate = user.auth.some(providerObjects => providerObjects.provider === "google")
@@ -49,6 +62,22 @@ passport.use(
                     return done(null, false, { message: "NO email found" })
                 }
                 let user = await User.findOne({ email })
+
+                if (user && !user.isVerified) {
+                    // throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
+                    return done(null, false, { message: "User is not verified" })
+
+                }
+                if (user && (user.isActive === IsActive.BLOCKED || user.isActive === IsActive.INACTIVE)) {
+                    // throw new AppError(httpStatus.BAD_REQUEST, `Use is ${user.isActive}`)
+
+                    return done(null, false, { message: `Use is ${user.isActive}` })
+                }
+
+                if (user && user.isDeleted) {
+                    // throw new AppError(httpStatus.BAD_REQUEST, "User is deleted")
+                    return done(null, false, { message: "User is deleted" })
+                }
                 if (!user) {
                     user = await User.create({
                         email,

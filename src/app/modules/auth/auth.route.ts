@@ -4,6 +4,7 @@ import { authControllers } from "./auth.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import passport from "passport";
+import { envVars } from "../../config/env";
 
 const router = Router()
 router.post('/login', authControllers.credentialLogin)
@@ -19,6 +20,6 @@ router.get("/google", async (req: Request, res: Response, next: NextFunction) =>
 
 })
 
-router.get('/google/callback', passport.authenticate("google", { failureRedirect: "/login" }), authControllers.googleCallback)
+router.get('/google/callback', passport.authenticate("google", { failureRedirect: `${envVars.FRONTEND_URL}/login?error=There is some issus with your account. Please contact with our support team.` }), authControllers.googleCallback)
 
 export const authRoute = router
