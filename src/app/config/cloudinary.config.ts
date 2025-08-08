@@ -22,7 +22,7 @@ export const deleteImageFromCloudinary = async (url: string) => {
             console.log(`File ${public_id} is deleted from cloudinary`);
         }
     } catch (error: any) {
-        console.log(error);
+
         throw new AppError(401, "Cloudinary image deletion Failed", error.message)
 
     }

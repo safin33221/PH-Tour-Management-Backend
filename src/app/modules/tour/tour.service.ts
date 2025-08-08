@@ -1,13 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-dynamic-delete */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { tourSearchAbleFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
-import { any, promise } from "zod";
 import { QueryBuilder } from "../../utils/queryBuilder";
-import { excludedField } from "../../constant";
 import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 

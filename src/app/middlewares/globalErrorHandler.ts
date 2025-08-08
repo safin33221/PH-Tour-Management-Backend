@@ -24,7 +24,6 @@ export const globalErrorhandler = async (err: any, req: Request, res: Response, 
     }
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
         const imageUrls = (req.files as Express.Multer.File[]).map(file => file.path)
-        console.log(imageUrls);
         await Promise.all(imageUrls.map(url => deleteImageFromCloudinary(url)))
     }
     let errorSources: IErrorSource[] = []

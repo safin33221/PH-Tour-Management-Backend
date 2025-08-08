@@ -7,10 +7,11 @@ import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from 'bcryptjs'
 import { User } from "../modules/user/user.model";
 import { Role } from "../modules/user/user.interface";
+import AppError from "../errorHelpers/AppError";
 
 passport.use(
     new LocalStrategy({
-        usernameField: "email", 
+        usernameField: "email",
         passwordField: "password"
     }, async (email: string, password: string, done: any) => {
         try {
@@ -28,8 +29,8 @@ passport.use(
                 return done(null, false, { message: "Incorrect Password" })
             }
             return done(null, user)
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            throw new AppError(500, error.message)
         }
     })
 )

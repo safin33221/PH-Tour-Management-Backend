@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { IUser } from "../user/user.interface"
+import { IProviders, IUser } from "../user/user.interface"
 import { User } from "../user/user.model"
 import httpStatus from 'http-status-codes'
 import bcryptjs from 'bcryptjs'
@@ -52,7 +52,45 @@ const resetPassword = async (oldPassword: string, newPassword: string, decodedTo
     user!.save()
 
 }
+const changePassword = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload) => {
+
+    const user = await User.findById(decodedToken.userId)
+
+    const isOldPasswordMatch = await bcryptjs.compare(oldPassword, user!.password as string)
+    if (!isOldPasswordMatch) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "Old Password does Not match")
+    }
+    user!.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SAULT_ROUND))
+    user!.save()
+
+}
+const setPassword = async (userId: string, plainPassword: string) => {
+
+    const user = await User.findById(userId)
+    if (!user) {
+        throw new AppError(404, "User not found")
+    }
+    if (user.password && user.auth.some(providerObject => providerObject.provider === "google")) {
+        throw new AppError(httpStatus.BAD_REQUEST, "You have already set your password. Now you can change the password from your profile password update")
+    }
+
+    const hashPassword = await bcryptjs.hash(plainPassword, Number(envVars.BCRYPT_SAULT_ROUND))
+
+    const auth: IProviders[] = [...user.auth, { provider: "credential", providerId: user.email }]
+    user.password = hashPassword
+    user.auth = auth
+
+    await user.save()
+
+
+
+
+}
+
 export const authServices = {
     credentialLogin,
-    getNewAccessToken, resetPassword
+    getNewAccessToken,
+    resetPassword,
+    changePassword,
+    setPassword
 }

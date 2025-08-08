@@ -11,10 +11,9 @@ import { BOOKING_STATUS, IBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
 import { SLLService } from "../sslCommerz/sslCommerz.service";
 import { ISLLCommerz } from "../sslCommerz/SLLCommerz.interface";
+import { getTransactionId } from "../../utils/getTransactionId";
 
-const getTransactionId = () => {
-    return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`
-}
+
 
 
 
