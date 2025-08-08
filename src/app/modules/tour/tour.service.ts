@@ -8,6 +8,7 @@ import { Tour, TourType } from "./tour.model";
 import { any, promise } from "zod";
 import { QueryBuilder } from "../../utils/queryBuilder";
 import { excludedField } from "../../constant";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 
 
@@ -62,7 +63,27 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     if (!isExistingTour) {
         throw new Error("Tour not found")
     }
+
+    if (payload.Images && payload.Images.length && isExistingTour.Images && isExistingTour.Images.length) {
+        payload.Images = [...payload.Images, ...isExistingTour.Images]
+    }
+    if (payload.deletedImage && payload.deletedImage.length > 0 && isExistingTour.Images && isExistingTour.Images.length > 0) {
+        const restDBImage = isExistingTour.Images.filter(imageUrl => !payload.deletedImage?.includes(imageUrl))
+
+        const updatedPayloadImage = (payload.Images || [])
+            .filter(imageUrl => !payload.deletedImage?.includes(imageUrl))
+            .filter(imageUrl => !restDBImage?.includes(imageUrl))
+
+        payload.Images = [...restDBImage, ...updatedPayloadImage]
+    }
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
+
+
+    if (payload.deletedImage && payload.deletedImage.length > 0 && isExistingTour.Images && isExistingTour.Images.length > 0) {
+        await Promise.all(payload.deletedImage.map(url => deleteImageFromCloudinary(url)))
+    }
+
+
     return updatedTour
 }
 

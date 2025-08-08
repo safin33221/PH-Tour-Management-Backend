@@ -1,3 +1,4 @@
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 import AppError from "../../errorHelpers/AppError";
 import { QueryBuilder } from "../../utils/queryBuilder";
 import { divisionSearchAbleFields } from "./division.constant";
@@ -73,8 +74,11 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
     if (duplicateDivision) {
         throw new Error("A division With this name already exist")
     }
-
     const updateDivision = await Division.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
+    
+    if (payload.thumbnail && existingDivision.thumbnail) {
+        await deleteImageFromCloudinary(existingDivision.thumbnail)
+    }
     return updateDivision
 }
 
