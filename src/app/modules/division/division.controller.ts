@@ -5,10 +5,16 @@ import { divisionService } from "./division.service";
 import httpStatus from 'http-status-codes'
 import { catchAsync } from "../../utils/CatchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { IDivision } from "./division.interface";
 
 
 const createDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const division = await divisionService.createDivision(req.body)
+ 
+    const payload: IDivision = {
+        ...req.body,
+        thumbnail: req.file?.path
+    }
+    const division = await divisionService.createDivision(payload)
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,

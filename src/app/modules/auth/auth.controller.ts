@@ -11,6 +11,7 @@ import { JwtPayload } from "jsonwebtoken"
 import passport from "passport"
 import { catchAsync } from "../../utils/CatchAsync"
 import AppError from "../../errorHelpers/AppError"
+
 import { createToken } from "../../utils/userTokens"
 import { setAuthCookie } from "../../utils/setCookie"
 import { sendResponse } from "../../utils/sendResponse"

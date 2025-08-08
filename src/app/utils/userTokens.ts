@@ -18,9 +18,9 @@ export const createToken = (user: Partial<IUser>) => {
     const accessToken = generateToken(jwtPayload, envVars.JWT_ACCESS_SECRET, envVars.JWT_EXPIRES_TIME)
 
     const refreshToken = generateToken(jwtPayload, envVars.JWT_REFRESH_SECRET, envVars.JWT_REFRESH_EXPIRED)
-    return {
+    return {    
         accessToken,
-        refreshToken
+        refreshToken    
     }
 }
 

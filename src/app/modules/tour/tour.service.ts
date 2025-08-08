@@ -15,6 +15,7 @@ import { excludedField } from "../../constant";
 
 const createTour = async (payload: ITour) => {
     const existingTour = await Tour.findOne({ title: payload.title })
+
     if (existingTour) {
         throw new Error("A Tour with This title already exist")
     }
