@@ -88,18 +88,18 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
 const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const decodedToken = req.user as JwtPayload
-    const newPassword = req.body.newPassword
-    const oldPassword = req.body.oldPassword
-    await authServices.resetPassword(oldPassword, newPassword, decodedToken)
+
+    await authServices.resetPassword(req.body, decodedToken)
 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: 'user Changed successfully',
+        message: 'Password Reset  successfully',
         data: null,
 
     })
 })
+//http://localhost:5173/reset-password?id=687b7d0b5b40728dc6f01580&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODdiN2QwYjViNDA3MjhkYzZmMDE1ODAiLCJlbWFpbCI6InNhZmF5ZXQ2OTcwQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzU0NzQwMzc2LCJleHAiOjE3NTQ3NDA5NzZ9.0YEw6P5igm3MMO32W-6CMSB0aXfTapC9w1XadSj_4AQ
 const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const decodedToken = req.user as JwtPayload
@@ -110,7 +110,7 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: 'user Changed successfully',
+        message: 'password Changed successfully',
         data: null,
 
     })
@@ -125,6 +125,20 @@ const setPassword = catchAsync(async (req: Request, res: Response, next: NextFun
         success: true,
         statusCode: httpStatus.OK,
         message: 'Password set successfully',
+        data: null,
+
+    })
+})
+const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const { email } = req.body
+    await authServices.forgotPassword(email)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Password forgot email send successfully',
         data: null,
 
     })
@@ -159,5 +173,6 @@ export const authControllers = {
     resetPassword,
     googleCallback,
     changePassword,
-    setPassword
+    setPassword,
+    forgotPassword
 }

@@ -35,6 +35,13 @@ interface EnvConfig {
         CLOUD_NAME: string,
         CLOUD_API_KEY: string,
         CLOUD_API_SECRET: string,
+    },
+    EMAIL_SENDER: {
+        SMTP_USER: string,
+        SMTP_PASS: string,
+        SMTP_FROM: string,
+        SMTP_HOST: string,
+        SMTP_PORT: string,
     }
 }
 
@@ -63,6 +70,11 @@ const loadEnvVariables = (): EnvConfig => {
         "CLOUD_NAME",
         "CLOUD_API_KEY",
         "CLOUD_API_SECRET",
+        "SMTP_USER",
+        "SMTP_PASS",
+        "SMTP_FROM",
+        "SMTP_HOST",
+        "SMTP_PORT",
     ];
 
     requiredEnvVariables.forEach(key => {
@@ -106,6 +118,13 @@ const loadEnvVariables = (): EnvConfig => {
             CLOUD_NAME: process.env.CLOUD_NAME as string,
             CLOUD_API_KEY: process.env.CLOUD_API_KEY as string,
             CLOUD_API_SECRET: process.env.CLOUD_API_SECRET as string,
+        },
+        EMAIL_SENDER: {
+            SMTP_USER: process.env.SMTP_USER as string,
+            SMTP_PASS: process.env.SMTP_PASS as string,
+            SMTP_FROM: process.env.SMTP_FROM as string,
+            SMTP_HOST: process.env.SMTP_HOST as string,
+            SMTP_PORT: process.env.SMTP_PORT as string,
         }
 
     }
