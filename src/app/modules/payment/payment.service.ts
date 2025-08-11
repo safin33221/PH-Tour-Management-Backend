@@ -9,6 +9,10 @@ import { PAYMENT_STATUS } from "./payment.interface";
 import { BOOKING_STATUS } from "../booking/booking.interface";
 import { ISLLCommerz } from "../sslCommerz/SLLCommerz.interface";
 import { SLLService } from "../sslCommerz/sslCommerz.service";
+import { generatePDF, IInvoiceData } from "../../utils/invoice";
+import { ITour } from "../tour/tour.interface";
+import { IUser } from "../user/user.interface";
+import { sendEmail } from "../../utils/sendEmail";
 
 
 const initPayment = async (bookingId: string) => {
@@ -56,14 +60,47 @@ const successPayment = async (query: Record<string, string>) => {
 
 
         }, { new: true, runValidators: true, session })
-        await Booking
+        if (!updatedPayment) {
+            throw new AppError(401, "Payment not found")
+        }
+        const updatedBooking = await Booking
             .findByIdAndUpdate(
                 updatedPayment?.booking,
                 { status: BOOKING_STATUS.COMPLETED },
-                { runValidators: true, session }
-            )
+                { new: true, runValidators: true, session }
+            ).populate("tour", "title")
+            .populate("user", "name email",)
 
+        if (!updatedBooking) {
+            throw new AppError(401, "Booking not found")
+        }
+        const invoiceData: IInvoiceData = {
+            bookingDate: updatedBooking?.createdAt as Date,
+            guestCount: updatedBooking?.guestCount,
+            totalAmount: updatedPayment?.amount,
+            tourTitle: (updatedBooking?.tour as unknown as ITour).title,
+            transactionID: updatedPayment?.transactionId,
+            customer: (updatedBooking?.user as unknown as IUser).name
 
+        }
+        const pdfBuffer = await generatePDF(invoiceData)
+        console.log(pdfBuffer);
+        
+
+        await sendEmail({
+            to: (updatedBooking.user as unknown as IUser).email,
+            subject: "Your Booking Invoice",
+            templateName: "invoice",
+            templateData: invoiceData,
+            attachments: [
+                {
+                    filename: "invoice.pfd",
+                    content: pdfBuffer,
+                    contentType: "application/pdf"
+                }
+            ]
+        })
+        console.log("eamil sended");
         await session.commitTransaction()
         session.endSession()
         return {
