@@ -13,6 +13,7 @@ import { generatePDF, IInvoiceData } from "../../utils/invoice";
 import { ITour } from "../tour/tour.interface";
 import { IUser } from "../user/user.interface";
 import { sendEmail } from "../../utils/sendEmail";
+import { uploadBufferToCloudinary } from "../../config/cloudinary.config";
 
 
 const initPayment = async (bookingId: string) => {
@@ -84,8 +85,12 @@ const successPayment = async (query: Record<string, string>) => {
 
         }
         const pdfBuffer = await generatePDF(invoiceData)
-        console.log(pdfBuffer);
-        
+        const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer, "invoice")
+        if (!cloudinaryResult) {
+            throw new AppError(401, "Error uploading pfd on cloudinary")
+        }
+        await Payment.findByIdAndUpdate(updatedPayment._id, { invoiceURL: cloudinaryResult?.secure_url }, { runValidators: true ,session})
+
 
         await sendEmail({
             to: (updatedBooking.user as unknown as IUser).email,
@@ -100,7 +105,7 @@ const successPayment = async (query: Record<string, string>) => {
                 }
             ]
         })
-        console.log("eamil sended");
+
         await session.commitTransaction()
         session.endSession()
         return {
