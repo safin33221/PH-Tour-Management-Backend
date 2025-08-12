@@ -31,5 +31,6 @@ export interface IUser {
     role?: Role,
     auth: IProviders[],
     bookings?: Types.ObjectId[],
-    guides?: Types.ObjectId[]
+    guides?: Types.ObjectId[],
+    createdAt?:Date
 }
