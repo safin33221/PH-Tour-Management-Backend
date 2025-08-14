@@ -6,6 +6,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { PaymentService } from "./payment.service";
 import { catchAsync } from "../../utils/CatchAsync";
 import httpStatus from "http-status-codes";
+import { SLLService } from "../sslCommerz/sslCommerz.service";
 
 const initPayment = catchAsync(async (req: Request, res: Response) => {
     const bookingId = req.params.bookingId
@@ -44,9 +45,24 @@ const cancelPayment = catchAsync(async (req: Request, res: Response) => {
 
 });
 
+const validatePayment = catchAsync(async (req: Request, res: Response) => {
+    console.log('ssl- commerze ipn:', req.body);
+
+    const result = await SLLService.validatedPayment(req.body)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Payment validated successfully',
+        data: null,
+
+    })
+
+});
+
 export const PaymentController = {
     initPayment,
     successPayment,
     failPayment,
     cancelPayment,
+    validatePayment
 };
