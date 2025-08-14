@@ -1,3 +1,5 @@
+import { Booking } from "../booking/booking.model"
+import { Tour } from "../tour/tour.model"
 import { IsActive } from "../user/user.interface"
 import { User } from "../user/user.model"
 
@@ -60,11 +62,128 @@ const getUserStats = async () => {
 }
 
 const getTourStats = async () => {
-    return {}
+    const totalTourPromise = Tour.countDocuments()
+    const totalTourTypePromise = Tour.aggregate([
+        //connect tour type model - lookup stage;
+        {
+            $lookup: {
+                from: "tourtypes",
+                localField: "tourType",
+                foreignField: "_id",
+                as: "type"
+
+            }
+        },
+        {
+            $unwind: "$type"
+        },
+        {
+            $group: {
+                _id: "$type.name",
+                count: { $sum: 1 }
+            }
+        }
+    ])
+    const avgTourCostPromise = Tour.aggregate([
+        //stage 1: group the cost from and average the sum
+        {
+            $group: {
+                _id: null,
+                avgCostFrom: { $avg: "$costFrom" }
+            }
+        }
+    ])
+
+    const totalTourByDivisionPromise = Tour.aggregate([
+        {
+            $lookup: {
+                from: "divisions",
+                localField: "division",
+                foreignField: "_id",
+                as: "division"
+            }
+        },
+        {
+            $unwind: "$division"
+        },
+        {
+            $group: {
+                _id: "$division.name",
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+    const totalHeightBookedTourPromise = Booking.aggregate([
+        //stage-1 Group the tour
+        {
+            $group: {
+                _id: "$tour",
+                bookingCount: { $sum: 1 }
+            }
+        },
+        //state-2 : sorting the tour
+        {
+            $sort: { bookingCount: -1 }
+        },
+        // stage - 3: set the limit
+        {
+            $limit: 5
+        },
+        //lookup the tour
+        {
+            $lookup: {
+                from: "tours",
+                let: { tourId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$_id", "$$tourId"] }
+                        }
+                    }
+                ],
+                as: "tour"
+            }
+        },
+        //Unwind stage
+        { $unwind: "$tour" },
+        //Project 
+        {
+            $project: {
+                bookingCount: 1,
+                "tour.title": 1,
+                "tour.slug": 1
+            }
+        }
+    ])
+
+    const [
+        totalTour,
+        totalTourTypes,
+        avgCostFrom,
+        totalTourByDivision,
+        totalHeightBookedTour
+
+    ] = await Promise.all([
+        totalTourPromise,
+        totalTourTypePromise,
+        avgTourCostPromise,
+        totalTourByDivisionPromise,
+        totalHeightBookedTourPromise
+    ])
+    return {
+        totalTour,
+        totalTourTypes,
+        avgCostFrom,
+        totalTourByDivision,
+        totalHeightBookedTour
+    }
 }
 
 const getBookingStats = async () => {
-    return {}
+    return {
+
+    }
 }
 
 const getPaymentStats = async () => {
