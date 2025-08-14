@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Booking } from "../booking/booking.model"
 import { Tour } from "../tour/tour.model"
 import { IsActive } from "../user/user.interface"
@@ -181,8 +182,108 @@ const getTourStats = async () => {
 }
 
 const getBookingStats = async () => {
-    return {
+    const totalBookingPromise = Booking.countDocuments()
 
+    const totalBookingByStatusPromise = Booking.aggregate([
+        //stage1: group the booking 
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+    const bookingPerTourPromise = Booking.aggregate([
+        //state 1 : group by tour
+        {
+            $group: {
+                _id: "$tour",
+                bookingCount: { $sum: 1 }
+            }
+        },
+        //sort stage;
+        {
+            $sort: { bookingCount: -1 }
+        },
+
+        //limit stage 
+        {
+            $limit: 10
+        },
+        // stage 4 - lookup stage
+
+        {
+            $lookup: {
+                from: "tours",
+                localField: "_id",
+                foreignField: "_id",
+                as: "tour"
+            }
+        },
+        //stage 5 : unwind
+        {
+            $unwind: "$tour"
+        },
+
+        // stage : 6
+        {
+            $project: {
+                bookingCount: 1,
+                _id: 1,
+                "tour.title": 1,
+                "tour.slug": 1
+            }
+        }
+    ])
+
+    const avgGuestCountPerBookingPromise = Booking.aggregate([
+        // group by guest count
+        {
+            $group: {
+                _id: null,
+                avgGuestCount: { $avg: "$guestCount" }
+            }
+        }
+    ])
+
+
+    const bookingLastSevenDaysPromise = Booking.countDocuments({
+        createdAt: { $gte: sevenDaysAgo }
+    })
+    const bookingLastThirtyDaysPromise = Booking.countDocuments({
+        createdAt: { $gte: thirtyDaysAgo }
+    })
+
+    const totalBookingByUniqueUserPromise = Booking.distinct("user").then((user: any) => user.length)
+
+    const [
+        totalBooking,
+        totalBookingByStatus,
+        bookingPerTour,
+        avgGuestCountPerBooking,
+        bookingLastSevenDays,
+        bookingLastThirtyDays,
+        totalBookingByUniqueUser
+    ] = await Promise.all([
+        totalBookingPromise,
+        totalBookingByStatusPromise,
+        bookingPerTourPromise,
+        avgGuestCountPerBookingPromise,
+        bookingLastSevenDaysPromise,
+        bookingLastThirtyDaysPromise,
+        totalBookingByUniqueUserPromise
+
+
+    ])
+    return {
+        totalBooking,
+        totalBookingByStatus,
+        bookingPerTour,
+        avgGuestCountPerBooking: avgGuestCountPerBooking[0].avgGuestCount,
+        bookingLastSevenDays,
+        bookingLastThirtyDays,
+        totalBookingByUniqueUser
     }
 }
 
